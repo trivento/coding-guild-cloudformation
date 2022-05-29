@@ -1,0 +1,7 @@
+{
+  "Parameters": {
+    "myName": "sebastiaan",
+    "apiGatewayName": "mijn-gateway",
+    "lambdaFunctionName": "mijn-functie"
+  }
+}

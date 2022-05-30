@@ -108,7 +108,7 @@ Er komt een error:
 `when calling the GetResources operation: User: arn:aws:iam::961488927380:user/codingguild-sebas is not authorized to perform: tag:GetResources because no identity-based policy allows the tag:GetResources action`
 Maar het toevoegen van de action `tag:GetResources` lost het probleem niet op. Het toevoegen van full administrator rechten werkt wel. Het probleem is dus niet, wat de error weergeeft. 
 ```
-aws resourcegroupstaggingapi --profile codingguild get-resources --tag-filters filter1={employee{sebastiaan}}
+aws resourcegroupstaggingapi --profile codingguild get-resources --tag-filters Key=employee,Values=sebastiaan
 ```
 
 # resources

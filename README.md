@@ -1,16 +1,28 @@
-# coding-guild-cloudformation
-cloudformation demo and presentation for the coding guild of Trivento given on 30 mei 2022
+# Coding Guild - Infrastructure as Code with CloudFormation
+cloudformation demo en presentatie voor de coding guild van Trivento gegeven op 30 mei 2022.
 Deze repo is terug te vinden op: https://github.com/trivento/coding-guild-cloudformation
 
 De keynote presentatie is terug te vinden in het bestand: "Coding Guild - IaC Infrastructure as Code.key"
 
 # voorbereiding
-Er is geen voorbereiding nodig, want we doen alles vanuit de AWS UI. 
-Een user binnen AWS is echter wel aan te bevelen. 
+Er is geen voorbereiding nodig, want alles kan vanuit de AWS UI. 
+Een user binnen AWS met voldoende rechten is echter wel aan te bevelen. Om in te kunnen loggen. 
+En een goede text editor of IDE is fijn. Bijvoorbeeld VScode
+
+## linter in VScode
+Installeer een linter in VScode. Dit is niet nodig, maar wel zo prettig om vroegtijdig achter syntax fouten te komen. 
+```
+pip install cfn-lint
+
+# en optioneel om templates als graphs te kunnen zien
+pip install pydot
+```
+https://github.com/aws-cloudformation/cfn-lint-visual-studio-code
+
 
 ## AWS CLI
 Het gebruik van de AWS CLI is wel prettig. 
-Hoe je dit opzet is te vinden in: https://github.com/trivento/cloudformation
+Hoe je dit opzet is te vinden in: https://gitlab.com/trivento/cloud/cloudformation
 tip: maak je credentials voor de CLI voor deze codingguild aan onder de naam `codingguild`, dan kan je de commando's kopieren en plakken, zonder problemen.
 
 `~/.aws/config`
@@ -30,6 +42,7 @@ aws_secret_access_key = *** masked ***
 
 Belangrijk is om bij elk AWS CLI commando een --profile mee te geven
 
+Voorbeel commando's
 ```
 # create a stack
 aws cloudformation --profile codingguild create-stack --stack-name myteststack --template-body file://sampletemplate.yaml
@@ -41,20 +54,10 @@ aws cloudformation --profile codingguild list-stacks --query "StackSummaries[*].
 aws cloudformation --profile codingguild delete-stack --stack-name test-sebas
 ```
 
-## linter
-Installeer een linter in VScode
-```
-pip install cfn-lint
-
-# en optioneel om templates als graphs te kunnen zien
-pip install pydot
-```
-https://github.com/aws-cloudformation/cfn-lint-visual-studio-code
-
-
-# demo stack
-Om te voorkomen dat iedereen een stack aanmaakt met de zelfde naam, wat overigens errors gaat geven.
-Doe even een search and replace op `myteststack` en verzin even een eigen stack naam. Dan kom je niet voor verrassingen te staan met kopieren en plakken van commando's
+# demo stack - 01-Simple-API.yml
+Om te voorkomen dat iedereen een stack aanmaakt met de zelfde naam, wat overigens errors gaat geven.  
+Doe even een search and replace op `myteststack` in deze `README.md` en verzin even een eigen stack naam.   
+Dan kom je niet voor verrassingen te staan met kopieren en plakken van commando's.  
 
 Een call naar je API maken.
 1. zoek je url op in de outputs van je stack, dit is de key: `apiGatewayInvokeURL`
@@ -68,17 +71,17 @@ Een call naar je API maken.
 De optie --capabilities CAPABILITY_NAMED_IAM is voor deze stack nodig omdat er IAM roles en policies aangemaakt worden voor de Lambda functie. 
 
 ```
-# create the stack
+# Maak de stack
 aws cloudformation --profile codingguild deploy --template-file 01-Simple-API.yml --stack-name myteststack --capabilities CAPABILITY_NAMED_IAM
 
-# get the output value for the API URL
-# change the StackName to your stack name..
+# haal de API gateway URL op uit de stack output. 
+# Verander wel even de stacknaam in de naam die je zelf hebt gekozen...
 aws cloudformation --profile codingguild describe-stacks --query 'Stacks[?StackName==`myteststack`][].Outputs[?OutputKey==`apiGatewayInvokeURL`].OutputValue' --output text
 
-# het curl commando
+# het curl commando, om te testen of je API werkt.  
 curl --request POST $(aws cloudformation --profile codingguild describe-stacks --query 'Stacks[?StackName==`myteststack`][].Outputs[?OutputKey==`apiGatewayInvokeURL`].OutputValue' --output text)
 
-# delete your stack
+# verwijder je stack weer.
 aws cloudformation --profile codingguild delete-stack --stack-name myteststack
 ```
 
